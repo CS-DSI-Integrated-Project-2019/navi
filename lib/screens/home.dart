@@ -87,12 +87,14 @@ class _HomeState extends State<Home> {
                                 fontSize: (18), fontWeight: (FontWeight.bold)),
                           ),
                           Container(
-                            margin: EdgeInsets.only(top:5.0),
+                            margin: EdgeInsets.only(top: 5.0),
                             padding: EdgeInsets.only(
                                 left: 5.0, top: 2.5, right: 5.0, bottom: 2.5),
                             child: Text(
                               "12 MIN WAIT",
-                              style: TextStyle(color: Colors.redAccent),
+                              style: TextStyle(
+                                  color: Colors.redAccent,
+                                  fontWeight: FontWeight.bold),
                             ),
                             decoration: BoxDecoration(
                               color: Colors.white,
@@ -104,9 +106,17 @@ class _HomeState extends State<Home> {
                         ],
                       ),
                     ),
-                    Icon(
-                      Icons.star,
-                      size: 40.0,
+                    Material(
+                      elevation: 16.0,
+                      child: Container(
+                        padding: EdgeInsets.all(5.0),
+                        color: Colors.redAccent,
+                        child: Icon(
+                          Icons.stars,
+                          size: 40.0,
+                          color: Colors.white,
+                        ),
+                      ),
                     ),
                   ],
                 ),
