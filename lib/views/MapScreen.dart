@@ -9,7 +9,6 @@ import 'package:provider/provider.dart';
 class MapViewer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    var userLocation = Provider.of<UserLocation>(context);
     return GMap();
   }
 }
