@@ -28,9 +28,12 @@ class Friend extends StatelessWidget {
         brightness: Brightness.light,
         backgroundColor: Colors.white,
         elevation: 4.0,
-        leading: new Icon(
-          Icons.menu,
-          color: Colors.black,
+        leading: IconButton(
+          icon: Icon(
+            Icons.menu,
+            color: Colors.black,
+          ),
+          onPressed: (){Navigator.pop(context);},
         ),
       ),
       body: SafeArea(
