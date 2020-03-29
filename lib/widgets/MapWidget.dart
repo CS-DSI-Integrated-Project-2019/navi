@@ -2,119 +2,173 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:mobile_app/datamodels/user_location.dart';
 import 'package:provider/provider.dart';
 import 'package:location/location.dart';
+import 'package:google_map_polyline/google_map_polyline.dart';
+import 'package:mobile_app/services/google_polyline_service.dart';
 
-class Map extends StatefulWidget {
+class GMap extends StatefulWidget {
+  GMap({Key key}) : super(key: key);
   @override
-  _MapState createState() => _MapState();
+  _GMapState createState() => _GMapState();
 }
 
-class _MapState extends State<Map> {
+class _GMapState extends State<GMap> {
   GoogleMapController mapController;
+  final Set<Marker> _markers = {};
+  final Set<Polyline> _polyLines = {};
 
-//  StreamSubscription _locationSubscription;
-  Location _locationTracker = Location();
-//  Marker marker;
-
-//  static final CameraPosition initialLocation = CameraPosition(
-//    target: LatLng(13.6526, 100.4936),
-//    zoom: 14.4746,
-//  );
-
-//  void updateMarker(UserLocation userLocation) {
-//    this.setState(() {
-//      marker = Marker(
-//        markerId: MarkerId("home"),
-//        position: LatLng(userLocation.lat, userLocation.long),
-//        draggable: false,
-//        zIndex: 2,
-//        flat: true,
-//        anchor: Offset(0.5, 0.5),
-//      );
-//    });
-//  }
-
-//  void getCurrentPosition() async {
-//    try {
-//      var location = await _locationTracker.getLocation();
-//      updateMarker(UserLocation(location.latitude, location.longitude));
-//
-//      if (_locationSubscription != null) {
-//        _locationSubscription.cancel();
-//      }
-//
-//      _locationSubscription =
-//          _locationTracker.onLocationChanged.listen((newLocalData) {
-//        if (mapController != null) {
-//          mapController.animateCamera(CameraUpdate.newCameraPosition(
-//              new CameraPosition(
-//                  bearing: 192.8334901395799,
-//                  target: LatLng(newLocalData.latitude, newLocalData.longitude),
-//                  tilt: 0,
-//                  zoom: 18.00)));
-//          updateMarker(
-//              UserLocation(newLocalData.latitude, newLocalData.longitude));
-//        }
-//      });
-//    } on PlatformException catch (e) {
-//      if (e.code == 'PERMISSION_DENIED') {
-//        debugPrint("Permission Denied");
-//      }
-//    }
-//  }
+  Set<Polyline> get polyLines => _polyLines;
+  GoogleMapsServices _googleMapsServices = GoogleMapsServices();
+  Completer<GoogleMapController> _controller = Completer();
+  static LatLng latLng;
+  GoogleMapPolyline _googleMapPolyline =
+      GoogleMapPolyline(apiKey: "AIzaSyCQmxaKrBc0StNtLiBFp5VkYCSw55onV3k");
+  Location currentLocation;
 
   @override
-//  void dispose() {
-//    if (_locationSubscription != null) {
-//      _locationSubscription.cancel();
-//    }
-//    super.dispose();
-//  }
+  void initState() {
+    // TODO: implement initState
+    getLocation();
+    super.initState();
+  }
+
+  getLocation() async {
+    var location = new Location();
+    location.onLocationChanged.listen((currentLocation) {
+      print(currentLocation.latitude);
+      print(currentLocation.longitude);
+      setState(() {
+        latLng = LatLng(currentLocation.latitude, currentLocation.longitude);
+      });
+
+      print("getLocation:$latLng");
+      _onAddMarkerButtonPressed();
+    });
+  }
+
+  void _onAddMarkerButtonPressed() {
+    setState(() {
+      _markers.add(Marker(
+        markerId: MarkerId("111"),
+        position: latLng,
+        icon: BitmapDescriptor.defaultMarker,
+      ));
+    });
+  }
+
+  void onCameraMove(CameraPosition position) {
+    latLng = position.target;
+  }
 
   void _onMapCreated(GoogleMapController controller) {
-    mapController = controller;
+    setState(() {
+      mapController = controller;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    var userLocation = Provider.of<UserLocation>(context);
-    var userLatLong = LatLng(userLocation.lat, userLocation.long);
-//    setState(() {
-//      cameraPos
-//    });
-    return GoogleMap(
-      onMapCreated: _onMapCreated,
-      initialCameraPosition: CameraPosition(
-        target: userLatLong,
-        zoom: 14.0,
+    return Scaffold(
+        appBar: AppBar(
+          title: Text('Lat:${latLng.latitude}, Long: ${latLng.longitude}'),
+        ),
+      body: GoogleMap(
+        onMapCreated: _onMapCreated,
+        onCameraMove: onCameraMove,
+        initialCameraPosition: CameraPosition(
+          target: latLng,
+          zoom: 14.0,
+        ),
+        markers: _markers,
+        polylines: polyLines,
+        onTap: (argument) => {_goToNewPos()},
+
       ),
-      markers: Set.of([
-        Marker(
-          markerId: MarkerId("home"),
-          position: userLatLong,
-          draggable: false,
-          zIndex: 2,
-          flat: true,
-          anchor: Offset(0.5, 0.5),
+        floatingActionButton: FloatingActionButton.extended(
+          onPressed: (){
+            print('pressed');
+            _goToNewPos();
+            sendRequest();
+          },
+          label: Text('Direction'),
+          icon: Icon(Icons.directions_walk),
         )
-      ]),
-      onTap: (argument) => {
-        _goToNewPos()
-      },
     );
   }
 
   Future<void> _goToNewPos() async {
     final GoogleMapController controller = await mapController;
-    var location = await _locationTracker.getLocation();
     controller.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
-        target: LatLng(location.latitude,location.longitude),
+        target: LatLng(latLng.latitude, latLng.longitude),
 //        tilt: 59.440717697143555,
         tilt: 5,
         zoom: 14.151926040649414)));
+  }
+
+  List _decodePoly(String poly) {
+    var list = poly.codeUnits;
+    var lList = new List();
+    int index = 0;
+    int len = poly.length;
+    int c = 0;
+    do {
+      var shift = 0;
+      int result = 0;
+
+      do {
+        c = list[index] - 63;
+        result |= (c & 0x1F) << (shift * 5);
+        index++;
+        shift++;
+      } while (c >= 32);
+      if (result & 1 == 1) {
+        result = ~result;
+      }
+      var result1 = (result >> 1) * 0.00001;
+      lList.add(result1);
+    } while (index < len);
+
+    for (var i = 2; i < lList.length; i++) lList[i] += lList[i - 2];
+
+    print(lList.toString());
+
+    return lList;
+  }
+
+  void createRoute(String encondedPoly) {
+    _polyLines.clear();
+    _polyLines.add(Polyline(
+        polylineId: PolylineId(latLng.toString()),
+        width: 4,
+        points: _convertToLatLng(_decodePoly(encondedPoly)),
+        color: Colors.blue));
+  }
+
+  List<LatLng> _convertToLatLng(List points) {
+    List<LatLng> result = <LatLng>[];
+    for (int i = 0; i < points.length; i++) {
+      if (i % 2 != 0) {
+        result.add(LatLng(points[i - 1], points[i]));
+      }
+    }
+    return result;
+  }
+
+  void sendRequest() async {
+    LatLng destination = LatLng(13.6526,100.4936);
+    String route =
+        await _googleMapsServices.getRouteCoordinates(latLng, destination);
+    createRoute(route);
+    _addMarker(destination, "LX building");
+  }
+  void _addMarker(LatLng location, String address) {
+    _markers.add(Marker(
+        markerId: MarkerId("112"),
+        position: location,
+        infoWindow: InfoWindow(title: address, snippet: "go here"),
+        icon: BitmapDescriptor.defaultMarker));
   }
 }

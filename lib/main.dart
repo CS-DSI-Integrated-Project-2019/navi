@@ -1,18 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:mobile_app/services/location_service.dart';
 import 'package:mobile_app/views/MapScreen.dart';
 import 'package:provider/provider.dart';
 
 import 'datamodels/user_location.dart';
+
 //var userLocation = Provider.of<UserLocation>(context);
-void main() => runApp(MyApp());
+Future main() async {
+  await DotEnv().load('.env');
+  runApp(MyApp());
+}
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-      providers: [StreamProvider(create: (context)=>LocationService().locationStream,)],
+      providers: [
+        StreamProvider(create: (context) => LocationService().locationStream,)
+      ],
       child: MaterialApp(
         title: 'Flutter Demo',
         theme: ThemeData(
@@ -104,7 +111,10 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             Text(
               '$_counter',
-              style: Theme.of(context).textTheme.display1,
+              style: Theme
+                  .of(context)
+                  .textTheme
+                  .display1,
             ),
             RaisedButton(
               child: Text('Go to map'),
