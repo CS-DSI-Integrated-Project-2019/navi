@@ -21,21 +21,8 @@ class _ContactState extends State<Contact> {
         Scaffold(
           backgroundColor: Colors.transparent,
           appBar: AppBar(
-            // title: new Text("csd"),
             backgroundColor: Colors.transparent,
             elevation: 0.0,
-            // leading: GestureDetector(
-            //   onTap: () {
-            //     print("test");
-            //   },
-            //   child: Icon(
-            //     Icons.arrow_downward,
-            //     color: Colors.white, // add custom icons also
-            //   ),
-            // ),
-          ),
-          drawer: Drawer(
-            
           ),
           body: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -43,7 +30,7 @@ class _ContactState extends State<Contact> {
               Align(
                 alignment: Alignment.center,
                 child: Container(
-                  padding: EdgeInsets.all(25.0),
+                  padding: EdgeInsets.all(22.0),
                   margin: EdgeInsets.only(left: 100.0),
                   width: MediaQuery.of(context).size.width * 0.5,
                   color: Colors.indigo[400],

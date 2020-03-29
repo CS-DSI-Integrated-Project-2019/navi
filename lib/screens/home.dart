@@ -21,7 +21,6 @@ class _HomeState extends State<Home> {
         Scaffold(
           backgroundColor: Colors.transparent,
           appBar: AppBar(
-            // title: new Text("csd"),
             backgroundColor: Colors.transparent,
             elevation: 0.0,
             leading: GestureDetector(

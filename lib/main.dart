@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import './screens/home.dart';
 import './screens/contact.dart';
+import './screens/friend.dart';
 
 void main() => runApp(MyApp());
 
@@ -9,7 +10,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: Contact(),
+      home: Friend(),
+      debugShowCheckedModeBanner: false,
     );
   }
 }
