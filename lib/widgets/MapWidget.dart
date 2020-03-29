@@ -31,12 +31,42 @@ class _GMapState extends State<GMap> {
   @override
   void initState() {
     // TODO: implement initState
-    getLocation();
+    print('before location');
+    getUserLocation();
     super.initState();
+    print(latLng.toString());
   }
 
-  getLocation() async {
+  getUserLocation() async {
     var location = new Location();
+    bool _serviceEnabled;
+    PermissionStatus _permissionGranted;
+    LocationData _locationData;
+
+    _serviceEnabled = await location.serviceEnabled();
+    if (!_serviceEnabled) {
+      _serviceEnabled = await location.requestService();
+      if (!_serviceEnabled) {
+        return;
+      }
+    }
+    print('press1');
+    _permissionGranted = await location.hasPermission();
+    if (_permissionGranted == PermissionStatus.denied) {
+      print('press2');
+      _permissionGranted = await location.requestPermission();
+      print("per "+_permissionGranted.toString());
+      if (_permissionGranted != PermissionStatus.granted) {
+        print('press3');
+        return;
+      }
+      print('granted');
+    }
+    _locationData = await location.getLocation();
+    print("check "+_locationData.toString());
+    setState(() {
+      latLng = LatLng(_locationData.latitude,_locationData.longitude);
+    });
     location.onLocationChanged.listen((currentLocation) {
       print(currentLocation.latitude);
       print(currentLocation.longitude);
@@ -71,7 +101,7 @@ class _GMapState extends State<GMap> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return latLng.toString()!=null?Scaffold(
         appBar: AppBar(
           title: Text('Lat:${latLng.latitude}, Long: ${latLng.longitude}'),
         ),
@@ -96,7 +126,7 @@ class _GMapState extends State<GMap> {
           label: Text('Direction'),
           icon: Icon(Icons.directions_walk),
         )
-    );
+    ):Text('please allow location');
   }
 
   Future<void> _goToNewPos() async {

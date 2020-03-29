@@ -3,7 +3,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:mobile_app/services/location_service.dart';
 import 'package:mobile_app/views/MapScreen.dart';
 import 'package:provider/provider.dart';
-
+import 'package:location/location.dart';
 import 'datamodels/user_location.dart';
 
 //var userLocation = Provider.of<UserLocation>(context);
@@ -31,6 +31,7 @@ class MyApp extends StatelessWidget {
           primarySwatch: Colors.blue,
         ),
         home: MyHomePage(title: 'Flutter Demo Home Page'),
+
     );
   }
 }
@@ -113,11 +114,40 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             RaisedButton(
               child: Text('Go to map'),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => MapViewer()),
-                );
+              onPressed: () async {
+                print('press');
+                Location location = new Location();
+
+                bool _serviceEnabled;
+                PermissionStatus _permissionGranted;
+                LocationData _locationData;
+
+                _serviceEnabled = await location.serviceEnabled();
+                if (!_serviceEnabled) {
+                  _serviceEnabled = await location.requestService();
+                  if (!_serviceEnabled) {
+                    print('return1');
+                    return;
+                  }
+                }
+                print('press1');
+                _permissionGranted = await location.hasPermission();
+                print(_permissionGranted.toString());
+                if (_permissionGranted == PermissionStatus.denied) {
+                  print('press2');
+                  _permissionGranted = await location.requestPermission();
+                  if (_permissionGranted != PermissionStatus.granted) {
+                    print('return2');
+                    return;
+                  }
+//                  Navigator.push(context, MaterialPageRoute(builder: (context)=>MapViewer()));
+                  print('granted');
+                }
+                _locationData = await location.getLocation();
+                print(_locationData.toString());
+                Navigator.push(context, MaterialPageRoute(builder: (context)=>MapViewer()));
+                print('press3');
+
               },
             )
           ],
