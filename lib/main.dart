@@ -3,7 +3,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:mobile_app/services/location_service.dart';
 import 'package:mobile_app/views/MapScreen.dart';
 import 'package:provider/provider.dart';
-import 'package:location/location.dart';
+
 import 'datamodels/user_location.dart';
 
 //var userLocation = Provider.of<UserLocation>(context);
@@ -17,21 +17,20 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        title: 'Flutter Demo',
-        theme: ThemeData(
-          // This is the theme of your application.
-          //
-          // Try running your application with "flutter run". You'll see the
-          // application has a blue toolbar. Then, without quitting the app, try
-          // changing the primarySwatch below to Colors.green and then invoke
-          // "hot reload" (press "r" in the console where you ran "flutter run",
-          // or simply save your changes to "hot reload" in a Flutter IDE).
-          // Notice that the counter didn't reset back to zero; the application
-          // is not restarted.
-          primarySwatch: Colors.blue,
-        ),
-        home: MyHomePage(title: 'Flutter Demo Home Page'),
-
+      title: 'Flutter Demo',
+      theme: ThemeData(
+        // This is the theme of your application.
+        //
+        // Try running your application with "flutter run". You'll see the
+        // application has a blue toolbar. Then, without quitting the app, try
+        // changing the primarySwatch below to Colors.green and then invoke
+        // "hot reload" (press "r" in the console where you ran "flutter run",
+        // or simply save your changes to "hot reload" in a Flutter IDE).
+        // Notice that the counter didn't reset back to zero; the application
+        // is not restarted.
+        primarySwatch: Colors.blue,
+      ),
+      home: MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }
 }
@@ -114,40 +113,11 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             RaisedButton(
               child: Text('Go to map'),
-              onPressed: () async {
-                print('press');
-                Location location = new Location();
-
-                bool _serviceEnabled;
-                PermissionStatus _permissionGranted;
-                LocationData _locationData;
-
-                _serviceEnabled = await location.serviceEnabled();
-                if (!_serviceEnabled) {
-                  _serviceEnabled = await location.requestService();
-                  if (!_serviceEnabled) {
-                    print('return1');
-                    return;
-                  }
-                }
-                print('press1');
-                _permissionGranted = await location.hasPermission();
-                print(_permissionGranted.toString());
-                if (_permissionGranted == PermissionStatus.denied) {
-                  print('press2');
-                  _permissionGranted = await location.requestPermission();
-                  if (_permissionGranted != PermissionStatus.granted) {
-                    print('return2');
-                    return;
-                  }
-//                  Navigator.push(context, MaterialPageRoute(builder: (context)=>MapViewer()));
-                  print('granted');
-                }
-                _locationData = await location.getLocation();
-                print(_locationData.toString());
-                Navigator.push(context, MaterialPageRoute(builder: (context)=>MapViewer()));
-                print('press3');
-
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => MapViewer()),
+                );
               },
             )
           ],

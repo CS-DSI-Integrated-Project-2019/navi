@@ -25,7 +25,7 @@ class _GMapState extends State<GMap> {
   Completer<GoogleMapController> _controller = Completer();
   static LatLng latLng;
   GoogleMapPolyline _googleMapPolyline =
-      GoogleMapPolyline(apiKey: "AIzaSyCQmxaKrBc0StNtLiBFp5VkYCSw55onV3k");
+  GoogleMapPolyline(apiKey: "AIzaSyCQmxaKrBc0StNtLiBFp5VkYCSw55onV3k");
   Location currentLocation;
 
   @override
@@ -65,13 +65,20 @@ class _GMapState extends State<GMap> {
     _locationData = await location.getLocation();
     print("check "+_locationData.toString());
     setState(() {
-      latLng = LatLng(_locationData.latitude,_locationData.longitude);
+      print('in state');
+      if(latLng.toString()!=null) {
+        latLng = LatLng(_locationData.latitude, _locationData.longitude);
+      }else{
+        latLng = LatLng(13.6498302,100.49541);
+      }
     });
     location.onLocationChanged.listen((currentLocation) {
       print(currentLocation.latitude);
       print(currentLocation.longitude);
       setState(() {
-        latLng = LatLng(currentLocation.latitude, currentLocation.longitude);
+        if(latLng.toString()!=null) {
+          latLng = LatLng(_locationData.latitude, _locationData.longitude);
+        }
       });
 
       print("getLocation:$latLng");
@@ -80,6 +87,7 @@ class _GMapState extends State<GMap> {
   }
 
   void _onAddMarkerButtonPressed() {
+    print('add marker 1');
     setState(() {
       _markers.add(Marker(
         markerId: MarkerId("111"),
@@ -105,18 +113,18 @@ class _GMapState extends State<GMap> {
         appBar: AppBar(
           title: Text('Lat:${latLng.latitude}, Long: ${latLng.longitude}'),
         ),
-      body: GoogleMap(
-        onMapCreated: _onMapCreated,
-        onCameraMove: onCameraMove,
-        initialCameraPosition: CameraPosition(
-          target: latLng,
-          zoom: 14.0,
-        ),
-        markers: _markers,
-        polylines: polyLines,
-        onTap: (argument) => {_goToNewPos()},
+        body: GoogleMap(
+          onMapCreated: _onMapCreated,
+          onCameraMove: onCameraMove,
+          initialCameraPosition: CameraPosition(
+            target: latLng,
+            zoom: 14.0,
+          ),
+          markers: _markers,
+          polylines: polyLines,
+          onTap: (argument) => {_goToNewPos()},
 
-      ),
+        ),
         floatingActionButton: FloatingActionButton.extended(
           onPressed: (){
             print('pressed');
@@ -190,11 +198,12 @@ class _GMapState extends State<GMap> {
   void sendRequest() async {
     LatLng destination = LatLng(13.6526,100.4936);
     String route =
-        await _googleMapsServices.getRouteCoordinates(latLng, destination);
+    await _googleMapsServices.getRouteCoordinates(latLng, destination);
     createRoute(route);
     _addMarker(destination, "LX building");
   }
   void _addMarker(LatLng location, String address) {
+    print('add markder');
     _markers.add(Marker(
         markerId: MarkerId("112"),
         position: location,
