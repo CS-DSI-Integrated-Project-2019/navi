@@ -41,5 +41,15 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>We have to use location</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>We have to use location</string>
+	<key>NSCameraUsageDescription</key>
+ 	<string>Describe why your app needs AR here.</string>
+	<key>NSMicrophoneUsageDescription</key>
+ 	<string>The app tries to use your microphone</string>
+	<key>io.flutter.embedded_views_preview</key>
+ 	<string>YES</string>
 </dict>
 </plist>

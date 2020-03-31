@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
-import './screens/home.dart';
-// import './screens/map.dart';
-// import './screens/contact.dart';
-// import './screens/friend.dart';
-// import './screens/detail.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:mobile_app/screens/HomeScreen.dart';
 
-void main() => runApp(MyApp());
+Future main() async {
+  await DotEnv().load('.env');
+  runApp(MyApp());
+}
 
 class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: Home(),
+      theme: ThemeData.light(),
+      home: HomeScreen(),
       debugShowCheckedModeBanner: false,
     );
   }

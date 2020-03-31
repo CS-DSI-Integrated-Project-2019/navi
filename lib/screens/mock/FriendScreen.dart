@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:dots_indicator/dots_indicator.dart';
 
-class Friend extends StatelessWidget {
+class FriendScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return (Scaffold(
